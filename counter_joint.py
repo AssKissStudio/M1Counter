@@ -51,36 +51,37 @@ def read():
         pwd = dicti['password']
 
 def moneycount():
-    uid = input(Fore.BLUE + 'Введите id аккаунта:')
-    fee = int(input(Fore.BLUE + 'Учитывать комиссию продажи?'))
-    chest = []
-    summ = 0
-    bag = set()
-    inventory = requests.get(f'https://monopoly-one.com/api/inventory.get?access_token={acs_tkn}&user_id={uid}').json()['data']['things']
-    for thing in inventory:
-        chest.append(thing['thing_prototype_id'])
-        bag.add(thing['thing_prototype_id'])
-    #print(chest)
-    #print(bag)
-    for item in bag:
-        if item in chest:
-            #print(item)
-            price = requests.get(f'https://monopoly-one.com/api/market.getBestPrice?access_token={acs_tkn}&thing_prototype_id={item}').json()
-            #print(price)
-            price = price['data']
-            if 'price' in price:
-                price = price['price']
+    while True:
+        uid = input(Fore.BLUE + 'Введите id аккаунта:')
+        fee = int(input(Fore.BLUE + 'Учитывать комиссию продажи?'))
+        chest = []
+        summ = 0
+        bag = set()
+        inventory = requests.get(f'https://monopoly-one.com/api/inventory.get?access_token={acs_tkn}&user_id={uid}').json()['data']['things']
+        for thing in inventory:
+            chest.append(thing['thing_prototype_id'])
+            bag.add(thing['thing_prototype_id'])
+        #print(chest)
+        #print(bag)
+        for item in bag:
+            if item in chest:
+                #print(item)
+                price = requests.get(f'https://monopoly-one.com/api/market.getBestPrice?access_token={acs_tkn}&thing_prototype_id={item}').json()
                 #print(price)
-                if str(int(price*100)).isdigit():
-                    price += 0.001
-                    price = round(price,2)
+                price = price['data']
+                if 'price' in price:
+                    price = price['price']
                     #print(price)
-                    if fee == 1:
-                        price = round(price * 0.85, 2)
-                    cost = round(price*chest.count(item),2)
-                    print(Fore.LIGHTBLACK_EX + f'{item}: {cost}₽')
-                    summ += cost
-    print(Fore.GREEN + f'{round(summ,2)}₽')
+                    if str(int(price*100)).isdigit():
+                        price += 0.001
+                        price = round(price,2)
+                        #print(price)
+                        if fee == 1:
+                            price = round(price * 0.85, 2)
+                        cost = round(price*chest.count(item),2)
+                        print(Fore.LIGHTBLACK_EX + f'{item}: {cost}₽')
+                        summ += cost
+        print(Fore.GREEN + f'{round(summ,2)}₽')
 
 def config():
     if not os.path.exists('config.txt'):
